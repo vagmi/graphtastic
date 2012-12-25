@@ -3,7 +3,8 @@
         graphtastic.test-helpers
         clojure.java.io
         clojure.test)
-  (:require [graphtastic.graph :as graph])
+  (:require [graphtastic.graph :as graph]
+            [graphtastic.index :as index])
   (:import java.io.File 
            org.apache.commons.io.FileUtils 
            org.neo4j.tooling.GlobalGraphOperations
@@ -38,3 +39,11 @@
         (fact (IteratorUtil/count (.getAllNodes ggo)) => 3) ; including the root node
         (fact (IteratorUtil/count (.getAllRelationships ggo)) => 1)
         (fact (IteratorUtil/count (.getAllRelationshipTypes ggo)) => 1)))))
+
+(deftest test-index
+  (with-test-db
+    (index/reset-indices!)
+    (index/hook-events @graph/graphdb)
+    (let [frodo (graph/create-node {:name "frodo" :type "hobbit"})
+          samwise (graph/create-node {:name "samwise" :type "hobbit"})]
+      (fact (count (into [] (graph/find-nodes {:type "hobbit"}))) => 2))))

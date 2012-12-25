@@ -13,10 +13,7 @@
   (index-relationships-on [:from :to])
   (index-relationships-on [:prev :from :next]))
 
-(defn reset-indices! []
-  (dosync
-   (ref-set default-node-keys (sorted-set))
-   (ref-set default-relationship-keys (sorted-set))))
+
 
 (against-background 
   [(before :contents (setup-indices!))]

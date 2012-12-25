@@ -1,5 +1,6 @@
 (ns graphtastic.graph
   (:use graphtastic.commons)
+  (:require [graphtastic.index :as index])
   (:import org.neo4j.graphdb.factory.GraphDatabaseFactory))
 
 (defonce graphdb (ref nil))
@@ -16,6 +17,7 @@
 (defn start! 
   ([db] (let [newdb (.newEmbeddedDatabase (GraphDatabaseFactory.) db)]
           (set-db newdb)
+          (index/hook-events newdb)
           (add-shutdown-hook)))
   ([db options] (let [db-builder (.newEmbeddedDatabaseBuilder (GraphDatabaseFactory.) db)]
                   (.setConfig db-builder options)
@@ -43,3 +45,6 @@
        (let [rel (.createRelationshipTo node1 node2 (rel-type relname))]
          (doseq [[k v] props] (.setProperty rel (name k) v))
          rel))))
+
+(defn find-nodes [props]
+  (index/find-nodes @graphdb props))

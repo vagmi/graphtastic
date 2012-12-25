@@ -1,11 +1,16 @@
 (ns graphtastic.index
   (:require [clojure.string :as str]
-           [clojure.set :as set]
-           [graphtastic.graph :as graph])
+           [clojure.set :as set])
   (:import (org.neo4j.graphdb.event TransactionEventHandler TransactionData)))
 
 (defonce default-node-keys (ref (sorted-set)))
 (defonce default-relationship-keys (ref (sorted-set)))
+
+(defn reset-indices! []
+  (dosync
+   (ref-set default-node-keys (sorted-set))
+   (ref-set default-relationship-keys (sorted-set))))
+
 (defonce transaction-event-handler (ref nil))
 
 (defn index-nodes-on [keys]
@@ -40,10 +45,12 @@
       (let [node-index (default-node-index db)
             rel-index (default-relationship-index db)]
         (doseq [nodeprop (.assignedNodeProperties data)] 
-          (if (contains? @default-node-keys (keyword (.key nodeprop)))
+          (if (or (empty? @default-node-keys) 
+                  (contains? @default-node-keys (keyword (.key nodeprop))))
             (index-prop-entry node-index nodeprop)))
         (doseq [relprop (.assignedRelationshipProperties data)] 
-          (if (contains? @default-relationship-keys (keyword (.key relprop)))
+          (if (or (empty? @default-relationship-index) 
+                  (contains? @default-relationship-keys (keyword (.key relprop))))
             (index-prop-entry rel-index relprop)))
         (doseq [node (.deletedNodes data)] (.remove node-index node))
         (doseq [rel (.deletedRelationships data)] (.remove rel-index rel))))
