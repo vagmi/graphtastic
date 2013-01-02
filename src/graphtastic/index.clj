@@ -36,8 +36,7 @@
   (-> db .index (.forNodes "default_node" {"type" "exact"})))
 
 (defn default-relationship-index [db]
-  (-> db .index (.forRelationships "default_node" {"type" "exact"})))
-
+  (-> db .index (.forRelationships "default_relationship" {"type" "exact"})))
 
 (defn indexing-handler-for [db]
   (reify TransactionEventHandler

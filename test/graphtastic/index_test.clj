@@ -28,7 +28,7 @@
       (let [node-index (default-node-index @graph/graphdb)
             rel-index (default-relationship-index @graph/graphdb)]
         (fact (-> @graph/graphdb .index (.existsForNodes "default_node")) => truthy)
-        (fact (-> @graph/graphdb .index (.existsForRelationships "default_node")) => truthy)))))
+        (fact (-> @graph/graphdb .index (.existsForRelationships "default_relationship")) => truthy)))))
 
 (deftest test-hook
   (testing "that indexing hooks should be setup properly and return results"

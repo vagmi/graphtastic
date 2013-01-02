@@ -10,15 +10,7 @@
            org.neo4j.tooling.GlobalGraphOperations
            org.neo4j.helpers.collection.IteratorUtil))
 
-(defn get-temp-db-path []
-  (let [temp-file (File/createTempFile "temp" (str (System/nanoTime)))
-        temp-path (str (.getPath temp-file) ".d")]
-    (.mkdir (file temp-path))
-    (.delete temp-file)
-    temp-path))
-
 (deftest graph-tests
-  
   (testing "Basic lifecycle"
     (let [db-path (get-temp-db-path)]
       (try
