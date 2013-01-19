@@ -1,7 +1,8 @@
 (ns graphtastic.graph
   (:use graphtastic.commons)
   (:require [graphtastic.index :as index])
-  (:import org.neo4j.graphdb.factory.GraphDatabaseFactory))
+  (:import org.neo4j.graphdb.factory.GraphDatabaseFactory
+           org.neo4j.cypher.javacompat.ExecutionEngine))
 
 (defonce graphdb (ref nil))
 
@@ -45,6 +46,10 @@
        (let [rel (.createRelationshipTo node1 node2 (rel-type relname))]
          (doseq [[k v] props] (.setProperty rel (name k) v))
          rel))))
+
+(defn query [cypher-query]
+  (let [ee (ExecutionEngine. @graphdb)]
+    (.execute ee cypher-query)))
 
 (defn find-nodes [props]
   (index/find-nodes @graphdb props))

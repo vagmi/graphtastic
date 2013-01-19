@@ -39,3 +39,17 @@
     (let [frodo (graph/create-node {:name "frodo" :type "hobbit"})
           samwise (graph/create-node {:name "samwise" :type "hobbit"})]
       (fact (count (into [] (graph/find-nodes {:type "hobbit"}))) => 2))))
+
+(deftest test-cypher
+  (testing "Cypher query capabilities"
+    (with-test-db
+      (let [morpheus (graph/create-node {:type "person" :name "morpheus"})
+            neo (graph/create-node {:type "person" :name "Neo"})
+            trinity (graph/create-node {:type "person" :name "trinity"})
+            cypher (graph/create-node {:type "person" :name "cypher"})
+            knows (graph/relate morpheus :knows trinity)
+            knows (graph/relate trinity :knows neo)
+            loves (graph/relate trinity :loves neo)
+            loves-2 (graph/relate cypher :loves trinity)
+            results (into {} (graph/query (str "START n=node(" (.getId cypher) ") MATCH n-[:loves]->trin RETURN trin")))]
+        (fact (results "trin") => trinity)))))
